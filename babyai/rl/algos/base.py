@@ -10,8 +10,22 @@ from babyai.rl.utils.supervised_losses import ExtraInfoCollector
 class BaseAlgo(ABC):
     """The base class for RL algorithms."""
 
-    def __init__(self, envs, acmodel, num_frames_per_proc, discount, lr, gae_lambda, entropy_coef,
-                 value_loss_coef, max_grad_norm, recurrence, preprocess_obss, reshape_reward, aux_info):
+    def __init__(
+        self,
+        envs,
+        acmodel,
+        num_frames_per_proc,
+        discount,
+        lr,
+        gae_lambda,
+        entropy_coef,
+        value_loss_coef,
+        max_grad_norm,
+        recurrence,
+        preprocess_obss,
+        reshape_reward,
+        aux_info,
+    ):
         """
         Initializes a `BaseAlgo` instance.
 
@@ -72,7 +86,6 @@ class BaseAlgo(ABC):
         self.num_procs = len(envs)
         self.num_frames = self.num_frames_per_proc * self.num_procs
 
-
         assert self.num_frames_per_proc % self.recurrence == 0
 
         # Initialize experience values
@@ -80,10 +93,14 @@ class BaseAlgo(ABC):
         shape = (self.num_frames_per_proc, self.num_procs)
 
         self.obs = self.env.reset()
-        self.obss = [None]*(shape[0])
+        self.obss = [None] * (shape[0])
 
-        self.memory = torch.zeros(shape[1], self.acmodel.memory_size, device=self.device)
-        self.memories = torch.zeros(*shape, self.acmodel.memory_size, device=self.device)
+        self.memory = torch.zeros(
+            shape[1], self.acmodel.memory_size, device=self.device
+        )
+        self.memories = torch.zeros(
+            *shape, self.acmodel.memory_size, device=self.device
+        )
 
         self.mask = torch.ones(shape[1], device=self.device)
         self.masks = torch.zeros(*shape, device=self.device)
@@ -94,12 +111,16 @@ class BaseAlgo(ABC):
         self.log_probs = torch.zeros(*shape, device=self.device)
 
         if self.aux_info:
-            self.aux_info_collector = ExtraInfoCollector(self.aux_info, shape, self.device)
+            self.aux_info_collector = ExtraInfoCollector(
+                self.aux_info, shape, self.device
+            )
 
         # Initialize log values
 
         self.log_episode_return = torch.zeros(self.num_procs, device=self.device)
-        self.log_episode_reshaped_return = torch.zeros(self.num_procs, device=self.device)
+        self.log_episode_reshaped_return = torch.zeros(
+            self.num_procs, device=self.device
+        )
         self.log_episode_num_frames = torch.zeros(self.num_procs, device=self.device)
 
         self.log_done_counter = 0
@@ -133,11 +154,13 @@ class BaseAlgo(ABC):
 
             preprocessed_obs = self.preprocess_obss(self.obs, device=self.device)
             with torch.no_grad():
-                model_results = self.acmodel(preprocessed_obs, self.memory * self.mask.unsqueeze(1))
-                dist = model_results['dist']
-                value = model_results['value']
-                memory = model_results['memory']
-                extra_predictions = model_results['extra_predictions']
+                model_results = self.acmodel(
+                    preprocessed_obs, self.memory * self.mask.unsqueeze(1)
+                )
+                dist = model_results["dist"]
+                value = model_results["value"]
+                memory = model_results["memory"]
+                extra_predictions = model_results["extra_predictions"]
 
             action = dist.sample()
 
@@ -159,28 +182,41 @@ class BaseAlgo(ABC):
             self.actions[i] = action
             self.values[i] = value
             if self.reshape_reward is not None:
-                self.rewards[i] = torch.tensor([
-                    self.reshape_reward(obs_, action_, reward_, done_)
-                    for obs_, action_, reward_, done_ in zip(obs, action, reward, done)
-                ], device=self.device)
+                self.rewards[i] = torch.tensor(
+                    [
+                        self.reshape_reward(obs_, action_, reward_, done_)
+                        for obs_, action_, reward_, done_ in zip(
+                            obs, action, reward, done
+                        )
+                    ],
+                    device=self.device,
+                )
             else:
                 self.rewards[i] = torch.tensor(reward, device=self.device)
             self.log_probs[i] = dist.log_prob(action)
 
             if self.aux_info:
-                self.aux_info_collector.fill_dictionaries(i, env_info, extra_predictions)
+                self.aux_info_collector.fill_dictionaries(
+                    i, env_info, extra_predictions
+                )
 
             # Update log values
 
-            self.log_episode_return += torch.tensor(reward, device=self.device, dtype=torch.float)
+            self.log_episode_return += torch.tensor(
+                reward, device=self.device, dtype=torch.float
+            )
             self.log_episode_reshaped_return += self.rewards[i]
-            self.log_episode_num_frames += torch.ones(self.num_procs, device=self.device)
+            self.log_episode_num_frames += torch.ones(
+                self.num_procs, device=self.device
+            )
 
             for i, done_ in enumerate(done):
                 if done_:
                     self.log_done_counter += 1
                     self.log_return.append(self.log_episode_return[i].item())
-                    self.log_reshaped_return.append(self.log_episode_reshaped_return[i].item())
+                    self.log_reshaped_return.append(
+                        self.log_episode_reshaped_return[i].item()
+                    )
                     self.log_num_frames.append(self.log_episode_num_frames[i].item())
 
             self.log_episode_return *= self.mask
@@ -191,28 +227,46 @@ class BaseAlgo(ABC):
 
         preprocessed_obs = self.preprocess_obss(self.obs, device=self.device)
         with torch.no_grad():
-            next_value = self.acmodel(preprocessed_obs, self.memory * self.mask.unsqueeze(1))['value']
+            next_value = self.acmodel(
+                preprocessed_obs, self.memory * self.mask.unsqueeze(1)
+            )["value"]
 
         for i in reversed(range(self.num_frames_per_proc)):
-            next_mask = self.masks[i+1] if i < self.num_frames_per_proc - 1 else self.mask
-            next_value = self.values[i+1] if i < self.num_frames_per_proc - 1 else next_value
-            next_advantage = self.advantages[i+1] if i < self.num_frames_per_proc - 1 else 0
+            next_mask = (
+                self.masks[i + 1] if i < self.num_frames_per_proc - 1 else self.mask
+            )
+            next_value = (
+                self.values[i + 1] if i < self.num_frames_per_proc - 1 else next_value
+            )
+            next_advantage = (
+                self.advantages[i + 1] if i < self.num_frames_per_proc - 1 else 0
+            )
 
-            delta = self.rewards[i] + self.discount * next_value * next_mask - self.values[i]
-            self.advantages[i] = delta + self.discount * self.gae_lambda * next_advantage * next_mask
+            delta = (
+                self.rewards[i]
+                + self.discount * next_value * next_mask
+                - self.values[i]
+            )
+            self.advantages[i] = (
+                delta + self.discount * self.gae_lambda * next_advantage * next_mask
+            )
 
         # Flatten the data correctly, making sure that
         # each episode's data is a continuous chunk
 
         exps = DictList()
-        exps.obs = [self.obss[i][j]
-                    for j in range(self.num_procs)
-                    for i in range(self.num_frames_per_proc)]
+        exps.obs = [
+            self.obss[i][j]
+            for j in range(self.num_procs)
+            for i in range(self.num_frames_per_proc)
+        ]
         # In commments below T is self.num_frames_per_proc, P is self.num_procs,
         # D is the dimensionality
 
         # T x P x D -> P x T x D -> (P * T) x D
-        exps.memory = self.memories.transpose(0, 1).reshape(-1, *self.memories.shape[2:])
+        exps.memory = self.memories.transpose(0, 1).reshape(
+            -1, *self.memories.shape[2:]
+        )
         # T x P -> P x T -> (P * T) x 1
         exps.mask = self.masks.transpose(0, 1).reshape(-1).unsqueeze(1)
 
@@ -244,9 +298,9 @@ class BaseAlgo(ABC):
         }
 
         self.log_done_counter = 0
-        self.log_return = self.log_return[-self.num_procs:]
-        self.log_reshaped_return = self.log_reshaped_return[-self.num_procs:]
-        self.log_num_frames = self.log_num_frames[-self.num_procs:]
+        self.log_return = self.log_return[-self.num_procs :]
+        self.log_reshaped_return = self.log_reshaped_return[-self.num_procs :]
+        self.log_num_frames = self.log_num_frames[-self.num_procs :]
 
         return exps, log
 

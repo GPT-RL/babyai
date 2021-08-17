@@ -8,7 +8,11 @@ def evaluate(agent, env, episodes, model_agent=True, offsets=None):
     # Initialize logs
     if model_agent:
         agent.model.eval()
-    logs = {"num_frames_per_episode": [], "return_per_episode": [], "observations_per_episode": []}
+    logs = {
+        "num_frames_per_episode": [],
+        "return_per_episode": [],
+        "observations_per_episode": [],
+    }
 
     if offsets:
         count = 0
@@ -28,13 +32,12 @@ def evaluate(agent, env, episodes, model_agent=True, offsets=None):
         returnn = 0
         obss = []
         while not done:
-            action = agent.act(obs)['action']
+            action = agent.act(obs)["action"]
             obss.append(obs)
             obs, reward, done, _ = env.step(action)
             agent.analyze_feedback(reward, done)
             num_frames += 1
             returnn += reward
-
 
         logs["observations_per_episode"].append(obss)
         logs["num_frames_per_episode"].append(num_frames)
@@ -56,7 +59,6 @@ def evaluate_demo_agent(agent, episodes):
 
 
 class ManyEnvs(gym.Env):
-
     def __init__(self, envs):
         self.envs = envs
         self.done = [False] * len(self.envs)
@@ -70,9 +72,10 @@ class ManyEnvs(gym.Env):
         return many_obs
 
     def step(self, actions):
-        self.results = [env.step(action) if not done else self.last_results[i]
-                        for i, (env, action, done)
-                        in enumerate(zip(self.envs, actions, self.done))]
+        self.results = [
+            env.step(action) if not done else self.last_results[i]
+            for i, (env, action, done) in enumerate(zip(self.envs, actions, self.done))
+        ]
         self.done = [result[2] for result in self.results]
         self.last_results = self.results
         return zip(*self.results)
@@ -82,7 +85,9 @@ class ManyEnvs(gym.Env):
 
 
 # Returns the performance of the agent on the environment for a particular number of episodes.
-def batch_evaluate(agent, env_name, seed, episodes, return_obss_actions=False, pixel=False):
+def batch_evaluate(
+    agent, env_name, seed, episodes, return_obss_actions=False, pixel=False
+):
     num_envs = min(256, episodes)
 
     envs = []
@@ -98,7 +103,7 @@ def batch_evaluate(agent, env_name, seed, episodes, return_obss_actions=False, p
         "return_per_episode": [],
         "observations_per_episode": [],
         "actions_per_episode": [],
-        "seed_per_episode": []
+        "seed_per_episode": [],
     }
 
     for i in range((episodes + num_envs - 1) // num_envs):
@@ -108,14 +113,14 @@ def batch_evaluate(agent, env_name, seed, episodes, return_obss_actions=False, p
         many_obs = env.reset()
 
         cur_num_frames = 0
-        num_frames = np.zeros((num_envs,), dtype='int64')
+        num_frames = np.zeros((num_envs,), dtype="int64")
         returns = np.zeros((num_envs,))
-        already_done = np.zeros((num_envs,), dtype='bool')
+        already_done = np.zeros((num_envs,), dtype="bool")
         if return_obss_actions:
             obss = [[] for _ in range(num_envs)]
             actions = [[] for _ in range(num_envs)]
         while (num_frames == 0).any():
-            action = agent.act_batch(many_obs)['action']
+            action = agent.act_batch(many_obs)["action"]
             if return_obss_actions:
                 for i in range(num_envs):
                     if not already_done[i]:

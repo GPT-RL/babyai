@@ -16,20 +16,15 @@ class Level_GoToRedBallGrey(RoomGridLevel):
 
     def __init__(self, room_size=8, num_dists=7, seed=None):
         self.num_dists = num_dists
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
-        obj, _ = self.add_object(0, 0, 'ball', 'red')
+        obj, _ = self.add_object(0, 0, "ball", "red")
         dists = self.add_distractors(num_distractors=self.num_dists, all_unique=False)
 
         for dist in dists:
-            dist.color = 'grey'
+            dist.color = "grey"
 
         # Make sure no unblocking is required
         self.check_objs_reachable()
@@ -45,16 +40,11 @@ class Level_GoToRedBall(RoomGridLevel):
 
     def __init__(self, room_size=8, num_dists=7, seed=None):
         self.num_dists = num_dists
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
-        obj, _ = self.add_object(0, 0, 'ball', 'red')
+        obj, _ = self.add_object(0, 0, "ball", "red")
         self.add_distractors(num_distractors=self.num_dists, all_unique=False)
 
         # Make sure no unblocking is required
@@ -78,12 +68,7 @@ class Level_GoToObj(RoomGridLevel):
     """
 
     def __init__(self, room_size=8, seed=None):
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
@@ -109,12 +94,7 @@ class Level_GoToLocal(RoomGridLevel):
 
     def __init__(self, room_size=8, num_dists=8, seed=None):
         self.num_dists = num_dists
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
@@ -192,12 +172,7 @@ class Level_PutNextLocal(RoomGridLevel):
 
     def __init__(self, room_size=8, num_objs=8, seed=None):
         self.num_objs = num_objs
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
@@ -206,8 +181,7 @@ class Level_PutNextLocal(RoomGridLevel):
         o1, o2 = self._rand_subset(objs, 2)
 
         self.instrs = PutNextInstr(
-            ObjDesc(o1.type, o1.color),
-            ObjDesc(o2.type, o2.color)
+            ObjDesc(o1.type, o1.color), ObjDesc(o2.type, o2.color)
         )
 
 
@@ -233,15 +207,12 @@ class Level_GoTo(RoomGridLevel):
         num_cols=3,
         num_dists=18,
         doors_open=False,
-        seed=None
+        seed=None,
     ):
         self.num_dists = num_dists
         self.doors_open = doors_open
         super().__init__(
-            num_rows=num_rows,
-            num_cols=num_cols,
-            room_size=room_size,
-            seed=seed
+            num_rows=num_rows, num_cols=num_cols, room_size=room_size, seed=seed
         )
 
     def gen_mission(self):
@@ -321,7 +292,7 @@ class Level_GoToImpUnlock(RoomGridLevel):
             jk = self._rand_int(0, self.num_rows)
             if ik is id and jk is jd:
                 continue
-            self.add_object(ik, jk, 'key', door.color)
+            self.add_object(ik, jk, "key", door.color)
             break
 
         self.connect_all()
@@ -333,12 +304,7 @@ class Level_GoToImpUnlock(RoomGridLevel):
         for i in range(self.num_cols):
             for j in range(self.num_rows):
                 if i is not id or j is not jd:
-                    self.add_distractors(
-                        i,
-                        j,
-                        num_distractors=2,
-                        all_unique=False
-                    )
+                    self.add_distractors(i, j, num_distractors=2, all_unique=False)
 
         # The agent must be placed after all the object to respect constraints
         while True:
@@ -353,7 +319,7 @@ class Level_GoToImpUnlock(RoomGridLevel):
 
         # Add a single object to the locked room
         # The instruction requires going to an object matching that description
-        obj, = self.add_distractors(id, jd, num_distractors=1, all_unique=False)
+        (obj,) = self.add_distractors(id, jd, num_distractors=1, all_unique=False)
         self.instrs = GoToInstr(ObjDesc(obj.type, obj.color))
 
 
@@ -385,7 +351,7 @@ class Level_UnblockPickup(RoomGridLevel):
         # Ensure that at least one object is not reachable without unblocking
         # Note: the selected object will still be reachable most of the time
         if self.check_objs_reachable(raise_exc=False):
-            raise RejectSampling('all objects reachable')
+            raise RejectSampling("all objects reachable")
 
         obj = self._rand_elem(objs)
         self.instrs = PickupInstr(ObjDesc(obj.type, obj.color))
@@ -435,7 +401,7 @@ class Level_Unlock(RoomGridLevel):
             jk = self._rand_int(0, self.num_rows)
             if ik is id and jk is jd:
                 continue
-            self.add_object(ik, jk, 'key', door.color)
+            self.add_object(ik, jk, "key", door.color)
             break
 
         # With 50% probability, ensure that the locked door is the only
@@ -453,12 +419,7 @@ class Level_Unlock(RoomGridLevel):
         for i in range(self.num_cols):
             for j in range(self.num_rows):
                 if i is not id or j is not jd:
-                    self.add_distractors(
-                        i,
-                        j,
-                        num_distractors=3,
-                        all_unique=False
-                    )
+                    self.add_distractors(i, j, num_distractors=3, all_unique=False)
 
         # The agent must be placed after all the object to respect constraints
         while True:
@@ -486,8 +447,7 @@ class Level_PutNext(RoomGridLevel):
         self.check_objs_reachable()
         o1, o2 = self._rand_subset(objs, 2)
         self.instrs = PutNextInstr(
-            ObjDesc(o1.type, o1.color),
-            ObjDesc(o2.type, o2.color)
+            ObjDesc(o1.type, o1.color), ObjDesc(o2.type, o2.color)
         )
 
 
@@ -504,14 +464,14 @@ class Level_PickupLoc(LevelGen):
         # of ambiguous locations within the same room
         super().__init__(
             seed=seed,
-            action_kinds=['pickup'],
-            instr_kinds=['action'],
+            action_kinds=["pickup"],
+            instr_kinds=["action"],
             num_rows=1,
             num_cols=1,
             num_dists=8,
             locked_room_prob=0,
             locations=True,
-            unblocking=False
+            unblocking=False,
         )
 
 
@@ -525,24 +485,17 @@ class Level_GoToSeq(LevelGen):
     No unblocking.
     """
 
-    def __init__(
-        self,
-        room_size=8,
-        num_rows=3,
-        num_cols=3,
-        num_dists=18,
-        seed=None
-    ):
+    def __init__(self, room_size=8, num_rows=3, num_cols=3, num_dists=18, seed=None):
         super().__init__(
             room_size=room_size,
             num_rows=num_rows,
             num_cols=num_cols,
             num_dists=num_dists,
             seed=seed,
-            action_kinds=['goto'],
+            action_kinds=["goto"],
             locked_room_prob=0,
             locations=False,
-            unblocking=False
+            unblocking=False,
         )
 
 
@@ -560,14 +513,7 @@ class Level_Synth(LevelGen):
     Competencies: Maze, Unblock, Unlock, GoTo, PickUp, PutNext, Open
     """
 
-    def __init__(
-        self,
-        room_size=8,
-        num_rows=3,
-        num_cols=3,
-        num_dists=18,
-        seed=None
-    ):
+    def __init__(self, room_size=8, num_rows=3, num_cols=3, num_dists=18, seed=None):
         # We add many distractors to increase the probability
         # of ambiguous locations within the same room
         super().__init__(
@@ -576,22 +522,16 @@ class Level_Synth(LevelGen):
             num_cols=num_cols,
             num_dists=num_dists,
             seed=seed,
-            instr_kinds=['action'],
+            instr_kinds=["action"],
             locations=False,
             unblocking=True,
-            implicit_unlock=False
+            implicit_unlock=False,
         )
 
 
 class Level_SynthS5R2(Level_Synth):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            num_rows=2,
-            num_cols=2,
-            num_dists=7,
-            seed=seed
-        )
+        super().__init__(room_size=5, num_rows=2, num_cols=2, num_dists=7, seed=seed)
 
 
 class Level_SynthLoc(LevelGen):
@@ -607,10 +547,10 @@ class Level_SynthLoc(LevelGen):
         # of ambiguous locations within the same room
         super().__init__(
             seed=seed,
-            instr_kinds=['action'],
+            instr_kinds=["action"],
             locations=True,
             unblocking=True,
-            implicit_unlock=False
+            implicit_unlock=False,
         )
 
 
@@ -626,10 +566,7 @@ class Level_SynthSeq(LevelGen):
         # We add many distractors to increase the probability
         # of ambiguous locations within the same room
         super().__init__(
-            seed=seed,
-            locations=True,
-            unblocking=True,
-            implicit_unlock=False
+            seed=seed, locations=True, unblocking=True, implicit_unlock=False
         )
 
 
@@ -641,24 +578,18 @@ class Level_MiniBossLevel(LevelGen):
             num_rows=2,
             room_size=5,
             num_dists=7,
-            locked_room_prob=0.25
+            locked_room_prob=0.25,
         )
 
 
 class Level_BossLevel(LevelGen):
     def __init__(self, seed=None):
-        super().__init__(
-            seed=seed
-        )
+        super().__init__(seed=seed)
 
 
 class Level_BossLevelNoUnlock(LevelGen):
     def __init__(self, seed=None):
-        super().__init__(
-            seed=seed,
-            locked_room_prob=0,
-            implicit_unlock=False
-        )
+        super().__init__(seed=seed, locked_room_prob=0, implicit_unlock=False)
 
 
 # Register the levels in this file

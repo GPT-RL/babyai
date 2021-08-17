@@ -14,12 +14,7 @@ class Level_GoToRedBlueBall(RoomGridLevel):
 
     def __init__(self, room_size=8, num_dists=7, seed=None):
         self.num_dists = num_dists
-        super().__init__(
-            num_rows=1,
-            num_cols=1,
-            room_size=room_size,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=room_size, seed=seed)
 
     def gen_mission(self):
         self.place_agent()
@@ -28,11 +23,11 @@ class Level_GoToRedBlueBall(RoomGridLevel):
 
         # Ensure there is only one red or blue ball
         for dist in dists:
-            if dist.type == 'ball' and (dist.color == 'blue' or dist.color == 'red'):
-                raise RejectSampling('can only have one blue or red ball')
+            if dist.type == "ball" and (dist.color == "blue" or dist.color == "red"):
+                raise RejectSampling("can only have one blue or red ball")
 
-        color = self._rand_elem(['red', 'blue'])
-        obj, _ = self.add_object(0, 0, 'ball', color)
+        color = self._rand_elem(["red", "blue"])
+        obj, _ = self.add_object(0, 0, "ball", color)
 
         # Make sure no unblocking is required
         self.check_objs_reachable()
@@ -49,17 +44,12 @@ class Level_OpenRedDoor(RoomGridLevel):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            num_rows=1,
-            num_cols=2,
-            room_size=5,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=2, room_size=5, seed=seed)
 
     def gen_mission(self):
-        obj, _ = self.add_door(0, 0, 0, 'red', locked=False)
+        obj, _ = self.add_door(0, 0, 0, "red", locked=False)
         self.place_agent(0, 0)
-        self.instrs = OpenInstr(ObjDesc('door', 'red'))
+        self.instrs = OpenInstr(ObjDesc("door", "red"))
 
 
 class Level_OpenDoor(RoomGridLevel):
@@ -69,12 +59,7 @@ class Level_OpenDoor(RoomGridLevel):
     (always unlocked, in the current room)
     """
 
-    def __init__(
-        self,
-        debug=False,
-        select_by=None,
-        seed=None
-    ):
+    def __init__(self, debug=False, select_by=None, seed=None):
         self.select_by = select_by
         self.debug = debug
         super().__init__(seed=seed)
@@ -104,11 +89,7 @@ class Level_OpenDoorDebug(Level_OpenDoor):
     Same as OpenDoor but the level stops when any door is opened
     """
 
-    def __init__(
-        self,
-        select_by=None,
-        seed=None
-    ):
+    def __init__(self, select_by=None, seed=None):
         super().__init__(select_by=select_by, debug=True, seed=seed)
 
 
@@ -120,16 +101,14 @@ class Level_OpenDoorColor(Level_OpenDoor):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            select_by="color",
-            seed=seed
-        )
+        super().__init__(select_by="color", seed=seed)
 
-
-#class Level_OpenDoorColorDebug(Level_OpenDoorColor, Level_OpenDoorDebug):
+    # class Level_OpenDoorColorDebug(Level_OpenDoorColor, Level_OpenDoorDebug):
     """
     Same as OpenDoorColor but the level stops when any door is opened
     """
+
+
 #    pass
 
 
@@ -141,10 +120,7 @@ class Level_OpenDoorLoc(Level_OpenDoor):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            select_by="loc",
-            seed=seed
-        )
+        super().__init__(select_by="loc", seed=seed)
 
 
 class Level_GoToDoor(RoomGridLevel):
@@ -155,10 +131,7 @@ class Level_GoToDoor(RoomGridLevel):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=7,
-            seed=seed
-        )
+        super().__init__(room_size=7, seed=seed)
 
     def gen_mission(self):
         objs = []
@@ -168,7 +141,7 @@ class Level_GoToDoor(RoomGridLevel):
         self.place_agent(1, 1)
 
         obj = self._rand_elem(objs)
-        self.instrs = GoToInstr(ObjDesc('door', obj.color))
+        self.instrs = GoToInstr(ObjDesc("door", obj.color))
 
 
 class Level_GoToObjDoor(RoomGridLevel):
@@ -178,10 +151,7 @@ class Level_GoToObjDoor(RoomGridLevel):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=8,
-            seed=seed
-        )
+        super().__init__(room_size=8, seed=seed)
 
     def gen_mission(self):
         self.place_agent(1, 1)
@@ -206,10 +176,7 @@ class Level_ActionObjDoor(RoomGridLevel):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=7,
-            seed=seed
-        )
+        super().__init__(room_size=7, seed=seed)
 
     def gen_mission(self):
         objs = self.add_distractors(1, 1, num_distractors=5)
@@ -222,7 +189,7 @@ class Level_ActionObjDoor(RoomGridLevel):
         obj = self._rand_elem(objs)
         desc = ObjDesc(obj.type, obj.color)
 
-        if obj.type == 'door':
+        if obj.type == "door":
             if self._rand_bool():
                 self.instrs = GoToInstr(desc)
             else:
@@ -246,7 +213,7 @@ class Level_UnlockLocal(RoomGridLevel):
 
     def gen_mission(self):
         door, _ = self.add_door(1, 1, locked=True)
-        self.add_object(1, 1, 'key', door.color)
+        self.add_object(1, 1, "key", door.color)
         if self.distractors:
             self.add_distractors(1, 1, num_distractors=3)
         self.place_agent(1, 1)
@@ -270,9 +237,7 @@ class Level_KeyInBox(RoomGridLevel):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            seed=seed
-        )
+        super().__init__(seed=seed)
 
     def gen_mission(self):
         door, _ = self.add_door(1, 1, locked=True)
@@ -300,8 +265,8 @@ class Level_UnlockPickup(RoomGridLevel):
             num_rows=1,
             num_cols=2,
             room_size=room_size,
-            max_steps=8*room_size**2,
-            seed=seed
+            max_steps=8 * room_size ** 2,
+            seed=seed,
         )
 
     def gen_mission(self):
@@ -310,7 +275,7 @@ class Level_UnlockPickup(RoomGridLevel):
         # Make sure the two rooms are directly connected by a locked door
         door, _ = self.add_door(0, 0, 0, locked=True)
         # Add a key to unlock the door
-        self.add_object(0, 0, 'key', door.color)
+        self.add_object(0, 0, "key", door.color)
         if self.distractors:
             self.add_distractors(num_distractors=4)
 
@@ -341,8 +306,8 @@ class Level_BlockedUnlockPickup(RoomGridLevel):
             num_rows=1,
             num_cols=2,
             room_size=room_size,
-            max_steps=16*room_size**2,
-            seed=seed
+            max_steps=16 * room_size ** 2,
+            seed=seed,
         )
 
     def gen_mission(self):
@@ -352,9 +317,9 @@ class Level_BlockedUnlockPickup(RoomGridLevel):
         door, pos = self.add_door(0, 0, 0, locked=True)
         # Block the door with a ball
         color = self._rand_color()
-        self.grid.set(pos[0]-1, pos[1], Ball(color))
+        self.grid.set(pos[0] - 1, pos[1], Ball(color))
         # Add a key to unlock the door
-        self.add_object(0, 0, 'key', door.color)
+        self.add_object(0, 0, "key", door.color)
 
         self.place_agent(0, 0)
 
@@ -372,8 +337,8 @@ class Level_UnlockToUnlock(RoomGridLevel):
             num_rows=1,
             num_cols=3,
             room_size=room_size,
-            max_steps=30*room_size**2,
-            seed=seed
+            max_steps=30 * room_size ** 2,
+            seed=seed,
         )
 
     def gen_mission(self):
@@ -408,12 +373,7 @@ class Level_PickupDist(RoomGridLevel):
 
     def __init__(self, debug=False, seed=None):
         self.debug = debug
-        super().__init__(
-            num_rows = 1,
-            num_cols = 1,
-            room_size=7,
-            seed=seed
-        )
+        super().__init__(num_rows=1, num_cols=1, room_size=7, seed=seed)
 
     def gen_mission(self):
         # Add 5 random objects in the room
@@ -438,10 +398,7 @@ class Level_PickupDistDebug(Level_PickupDist):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            debug=True,
-            seed=seed
-        )
+        super().__init__(debug=True, seed=seed)
 
 
 class Level_PickupAbove(RoomGridLevel):
@@ -452,11 +409,7 @@ class Level_PickupAbove(RoomGridLevel):
 
     def __init__(self, seed=None):
         room_size = 6
-        super().__init__(
-            room_size=room_size,
-            max_steps=8*room_size**2,
-            seed=seed
-        )
+        super().__init__(room_size=room_size, max_steps=8 * room_size ** 2, seed=seed)
 
     def gen_mission(self):
         # Add a random object to the top-middle room
@@ -477,22 +430,13 @@ class Level_OpenTwoDoors(RoomGridLevel):
     This task requires memory (recurrent policy) to be solved effectively.
     """
 
-    def __init__(self,
-        first_color=None,
-        second_color=None,
-        strict=False,
-        seed=None
-    ):
+    def __init__(self, first_color=None, second_color=None, strict=False, seed=None):
         self.first_color = first_color
         self.second_color = second_color
         self.strict = strict
 
         room_size = 6
-        super().__init__(
-            room_size=room_size,
-            max_steps=20*room_size**2,
-            seed=seed
-        )
+        super().__init__(room_size=room_size, max_steps=20 * room_size ** 2, seed=seed)
 
     def gen_mission(self):
         colors = self._rand_subset(COLOR_NAMES, 2)
@@ -511,7 +455,7 @@ class Level_OpenTwoDoors(RoomGridLevel):
 
         self.instrs = BeforeInstr(
             OpenInstr(ObjDesc(door1.type, door1.color), strict=self.strict),
-            OpenInstr(ObjDesc(door2.type, door2.color))
+            OpenInstr(ObjDesc(door2.type, door2.color)),
         )
 
 
@@ -520,17 +464,8 @@ class Level_OpenTwoDoorsDebug(Level_OpenTwoDoors):
     Same as OpenTwoDoors but the level stops when the second door is opened
     """
 
-    def __init__(self,
-        first_color=None,
-        second_color=None,
-        seed=None
-    ):
-        super().__init__(
-            first_color,
-            second_color,
-            strict=True,
-            seed=seed
-        )
+    def __init__(self, first_color=None, second_color=None, seed=None):
+        super().__init__(first_color, second_color, strict=True, seed=seed)
 
 
 class Level_OpenRedBlueDoors(Level_OpenTwoDoors):
@@ -542,11 +477,7 @@ class Level_OpenRedBlueDoors(Level_OpenTwoDoors):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            first_color="red",
-            second_color="blue",
-            seed=seed
-        )
+        super().__init__(first_color="red", second_color="blue", seed=seed)
 
 
 class Level_OpenRedBlueDoorsDebug(Level_OpenTwoDoorsDebug):
@@ -555,11 +486,7 @@ class Level_OpenRedBlueDoorsDebug(Level_OpenTwoDoorsDebug):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            first_color="red",
-            second_color="blue",
-            seed=seed
-        )
+        super().__init__(first_color="red", second_color="blue", seed=seed)
 
 
 class Level_FindObjS5(RoomGridLevel):
@@ -570,11 +497,7 @@ class Level_FindObjS5(RoomGridLevel):
     """
 
     def __init__(self, room_size=5, seed=None):
-        super().__init__(
-            room_size=room_size,
-            max_steps=20*room_size**2,
-            seed=seed
-        )
+        super().__init__(room_size=room_size, max_steps=20 * room_size ** 2, seed=seed)
 
     def gen_mission(self):
         # Add a random object to a random room
@@ -593,10 +516,7 @@ class Level_FindObjS6(Level_FindObjS5):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=6,
-            seed=seed
-        )
+        super().__init__(room_size=6, seed=seed)
 
 
 class Level_FindObjS7(Level_FindObjS5):
@@ -605,10 +525,7 @@ class Level_FindObjS7(Level_FindObjS5):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=7,
-            seed=seed
-        )
+        super().__init__(room_size=7, seed=seed)
 
 
 class KeyCorridor(RoomGridLevel):
@@ -617,19 +534,13 @@ class KeyCorridor(RoomGridLevel):
     random room.
     """
 
-    def __init__(
-        self,
-        num_rows=3,
-        obj_type="ball",
-        room_size=6,
-        seed=None
-    ):
+    def __init__(self, num_rows=3, obj_type="ball", room_size=6, seed=None):
         self.obj_type = obj_type
 
         super().__init__(
             room_size=room_size,
             num_rows=num_rows,
-            max_steps=30*room_size**2,
+            max_steps=30 * room_size ** 2,
             seed=seed,
         )
 
@@ -645,7 +556,7 @@ class KeyCorridor(RoomGridLevel):
         obj, _ = self.add_object(2, room_idx, kind=self.obj_type)
 
         # Add a key in a random room on the left side
-        self.add_object(0, self._rand_int(0, self.num_rows), 'key', door.color)
+        self.add_object(0, self._rand_int(0, self.num_rows), "key", door.color)
 
         # Place the agent in the middle
         self.place_agent(1, self.num_rows // 2)
@@ -658,51 +569,33 @@ class KeyCorridor(RoomGridLevel):
 
 class Level_KeyCorridorS3R1(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=3,
-            num_rows=1,
-            seed=seed
-        )
+        super().__init__(room_size=3, num_rows=1, seed=seed)
+
 
 class Level_KeyCorridorS3R2(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=3,
-            num_rows=2,
-            seed=seed
-        )
+        super().__init__(room_size=3, num_rows=2, seed=seed)
+
 
 class Level_KeyCorridorS3R3(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=3,
-            num_rows=3,
-            seed=seed
-        )
+        super().__init__(room_size=3, num_rows=3, seed=seed)
+
 
 class Level_KeyCorridorS4R3(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=4,
-            num_rows=3,
-            seed=seed
-        )
+        super().__init__(room_size=4, num_rows=3, seed=seed)
+
 
 class Level_KeyCorridorS5R3(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            num_rows=3,
-            seed=seed
-        )
+        super().__init__(room_size=5, num_rows=3, seed=seed)
+
 
 class Level_KeyCorridorS6R3(KeyCorridor):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=6,
-            num_rows=3,
-            seed=seed
-        )
+        super().__init__(room_size=6, num_rows=3, seed=seed)
+
 
 class Level_1RoomS8(RoomGridLevel):
     """
@@ -711,12 +604,7 @@ class Level_1RoomS8(RoomGridLevel):
     """
 
     def __init__(self, room_size=8, seed=None):
-        super().__init__(
-            room_size=room_size,
-            num_rows=1,
-            num_cols=1,
-            seed=seed
-        )
+        super().__init__(room_size=room_size, num_rows=1, num_cols=1, seed=seed)
 
     def gen_mission(self):
         obj, _ = self.add_object(0, 0, kind="ball")
@@ -731,10 +619,7 @@ class Level_1RoomS12(Level_1RoomS8):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=12,
-            seed=seed
-        )
+        super().__init__(room_size=12, seed=seed)
 
 
 class Level_1RoomS16(Level_1RoomS8):
@@ -744,10 +629,7 @@ class Level_1RoomS16(Level_1RoomS8):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=16,
-            seed=seed
-        )
+        super().__init__(room_size=16, seed=seed)
 
 
 class Level_1RoomS20(Level_1RoomS8):
@@ -757,10 +639,7 @@ class Level_1RoomS20(Level_1RoomS8):
     """
 
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=20,
-            seed=seed
-        )
+        super().__init__(room_size=20, seed=seed)
 
 
 class PutNext(RoomGridLevel):
@@ -770,13 +649,7 @@ class PutNext(RoomGridLevel):
     instructions.
     """
 
-    def __init__(
-        self,
-        room_size,
-        objs_per_room,
-        start_carrying=False,
-        seed=None
-    ):
+    def __init__(self, room_size, objs_per_room, start_carrying=False, seed=None):
         assert room_size >= 4
         assert objs_per_room <= 9
         self.objs_per_room = objs_per_room
@@ -786,8 +659,8 @@ class PutNext(RoomGridLevel):
             num_rows=1,
             num_cols=2,
             room_size=room_size,
-            max_steps=8*room_size**2,
-            seed=seed
+            max_steps=8 * room_size ** 2,
+            seed=seed,
         )
 
     def gen_mission(self):
@@ -813,10 +686,7 @@ class PutNext(RoomGridLevel):
 
         self.obj_a = a
 
-        self.instrs = PutNextInstr(
-            ObjDesc(a.type, a.color),
-            ObjDesc(b.type, b.color)
-        )
+        self.instrs = PutNextInstr(ObjDesc(a.type, a.color), ObjDesc(b.type, b.color))
 
     def reset(self, **kwargs):
         obs = super().reset(**kwargs)
@@ -831,77 +701,42 @@ class PutNext(RoomGridLevel):
 
 class Level_PutNextS4N1(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=4,
-            objs_per_room=1,
-            seed=seed
-        )
+        super().__init__(room_size=4, objs_per_room=1, seed=seed)
 
 
 class Level_PutNextS5N1(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            objs_per_room=1,
-            seed=seed
-        )
+        super().__init__(room_size=5, objs_per_room=1, seed=seed)
 
 
 class Level_PutNextS5N2(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            objs_per_room=2,
-            seed=seed
-        )
+        super().__init__(room_size=5, objs_per_room=2, seed=seed)
 
 
 class Level_PutNextS6N3(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=6,
-            objs_per_room=3,
-            seed=seed
-        )
+        super().__init__(room_size=6, objs_per_room=3, seed=seed)
 
 
 class Level_PutNextS7N4(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=7,
-            objs_per_room=4,
-            seed=seed
-        )
+        super().__init__(room_size=7, objs_per_room=4, seed=seed)
 
 
 class Level_PutNextS5N2Carrying(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            objs_per_room=2,
-            start_carrying=True,
-            seed=seed
-        )
+        super().__init__(room_size=5, objs_per_room=2, start_carrying=True, seed=seed)
 
 
 class Level_PutNextS6N3Carrying(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=6,
-            objs_per_room=3,
-            start_carrying=True,
-            seed=seed
-        )
+        super().__init__(room_size=6, objs_per_room=3, start_carrying=True, seed=seed)
 
 
 class Level_PutNextS7N4Carrying(PutNext):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=7,
-            objs_per_room=4,
-            start_carrying=True,
-            seed=seed
-        )
+        super().__init__(room_size=7, objs_per_room=4, start_carrying=True, seed=seed)
 
 
 class MoveTwoAcross(RoomGridLevel):
@@ -911,12 +746,7 @@ class MoveTwoAcross(RoomGridLevel):
     instructions.
     """
 
-    def __init__(
-        self,
-        room_size,
-        objs_per_room,
-        seed=None
-    ):
+    def __init__(self, room_size, objs_per_room, seed=None):
         assert objs_per_room <= 9
         self.objs_per_room = objs_per_room
 
@@ -924,8 +754,8 @@ class MoveTwoAcross(RoomGridLevel):
             num_rows=1,
             num_cols=2,
             room_size=room_size,
-            max_steps=16*room_size**2,
-            seed=seed
+            max_steps=16 * room_size ** 2,
+            seed=seed,
         )
 
     def gen_mission(self):
@@ -949,26 +779,18 @@ class MoveTwoAcross(RoomGridLevel):
 
         self.instrs = BeforeInstr(
             PutNextInstr(ObjDesc(a.type, a.color), ObjDesc(b.type, b.color)),
-            PutNextInstr(ObjDesc(c.type, c.color), ObjDesc(d.type, d.color))
+            PutNextInstr(ObjDesc(c.type, c.color), ObjDesc(d.type, d.color)),
         )
 
 
 class Level_MoveTwoAcrossS5N2(MoveTwoAcross):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=5,
-            objs_per_room=2,
-            seed=seed
-        )
+        super().__init__(room_size=5, objs_per_room=2, seed=seed)
 
 
 class Level_MoveTwoAcrossS8N9(MoveTwoAcross):
     def __init__(self, seed=None):
-        super().__init__(
-            room_size=8,
-            objs_per_room=9,
-            seed=seed
-        )
+        super().__init__(room_size=8, objs_per_room=9, seed=seed)
 
 
 class OpenDoorsOrder(RoomGridLevel):
@@ -976,22 +798,13 @@ class OpenDoorsOrder(RoomGridLevel):
     Open one or two doors in the order specified.
     """
 
-    def __init__(
-        self,
-        num_doors,
-        debug=False,
-        seed=None
-    ):
+    def __init__(self, num_doors, debug=False, seed=None):
         assert num_doors >= 2
         self.num_doors = num_doors
         self.debug = debug
 
         room_size = 6
-        super().__init__(
-            room_size=room_size,
-            max_steps=20*room_size**2,
-            seed=seed
-        )
+        super().__init__(room_size=room_size, max_steps=20 * room_size ** 2, seed=seed)
 
     def gen_mission(self):
         colors = self._rand_subset(COLOR_NAMES, self.num_doors)
@@ -1009,47 +822,39 @@ class OpenDoorsOrder(RoomGridLevel):
         if mode == 0:
             self.instrs = OpenInstr(desc1, strict=self.debug)
         elif mode == 1:
-            self.instrs = BeforeInstr(OpenInstr(desc1, strict=self.debug), OpenInstr(desc2, strict=self.debug))
+            self.instrs = BeforeInstr(
+                OpenInstr(desc1, strict=self.debug), OpenInstr(desc2, strict=self.debug)
+            )
         elif mode == 2:
-            self.instrs = AfterInstr(OpenInstr(desc1, strict=self.debug), OpenInstr(desc2, strict=self.debug))
+            self.instrs = AfterInstr(
+                OpenInstr(desc1, strict=self.debug), OpenInstr(desc2, strict=self.debug)
+            )
         else:
             assert False
 
+
 class Level_OpenDoorsOrderN2(OpenDoorsOrder):
     def __init__(self, seed=None):
-        super().__init__(
-            num_doors=2,
-            seed=seed
-        )
+        super().__init__(num_doors=2, seed=seed)
 
 
 class Level_OpenDoorsOrderN4(OpenDoorsOrder):
     def __init__(self, seed=None):
-        super().__init__(
-            num_doors=4,
-            seed=seed
-        )
+        super().__init__(num_doors=4, seed=seed)
 
 
 class Level_OpenDoorsOrderN2Debug(OpenDoorsOrder):
     def __init__(self, seed=None):
-        super().__init__(
-            num_doors=2,
-            debug=True,
-            seed=seed
-        )
+        super().__init__(num_doors=2, debug=True, seed=seed)
 
 
 class Level_OpenDoorsOrderN4Debug(OpenDoorsOrder):
     def __init__(self, seed=None):
-        super().__init__(
-            num_doors=4,
-            debug=True,
-            seed=seed
-        )
+        super().__init__(num_doors=4, debug=True, seed=seed)
+
 
 for name, level in list(globals().items()):
-    if name.startswith('Level_'):
+    if name.startswith("Level_"):
         level.is_bonus = True
 
 # Register the levels in this file

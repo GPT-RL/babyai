@@ -10,5 +10,5 @@ from babyai import levels
 
 # NOTE: please make sure that tests are always deterministic
 
-print('Testing levels, mission generation')
+print("Testing levels, mission generation")
 levels.test()
