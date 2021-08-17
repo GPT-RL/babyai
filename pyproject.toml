@@ -6,6 +6,12 @@ authors = ["Ethan Brooks <ethanabrooks@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+torch = [
+    {markers = "sys_platform == 'darwin'", url =  "https://download.pytorch.org/whl/cpu/torch-1.9.0-cp38-none-macosx_10_9_x86_64.whl"},
+    {markers = "sys_platform == 'linux'", url = "https://download.pytorch.org/whl/cu111/torch-1.9.0%2Bcu111-cp38-cp38-linux_x86_64.whl"}
+]
+blosc = "^1.10.4"
+gym-minigrid = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 ipython = "^7.26.0"
