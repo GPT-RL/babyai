@@ -319,7 +319,7 @@ python-versions = ">=3.6"
 name = "torch"
 version = "1.9.0"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.2"
 
@@ -333,7 +333,7 @@ url = "https://download.pytorch.org/whl/cpu/torch-1.9.0-cp38-none-macosx_10_9_x8
 name = "torch"
 version = "1.9.0+cu111"
 description = "Tensors and Dynamic neural networks in Python with strong GPU acceleration"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.2"
 
@@ -358,7 +358,7 @@ test = ["pytest"]
 name = "typing-extensions"
 version = "3.10.0.2"
 description = "Backported and Experimental Type Hints for Python 3.5+"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -373,7 +373,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "57a1a09898ad3dc9ebd6ec7dd7cf3e66f6ad37701b6da85b2b9a5123d3153f13"
+content-hash = "64c5df655c4eb6aaf40a9a23f9f0b9cf84ad464c5f735b0402d39be4e95cd1f7"
 
 [metadata.files]
 appnope = [
