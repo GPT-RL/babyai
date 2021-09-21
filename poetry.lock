@@ -124,7 +124,7 @@ numpy = ">=1.15.0"
 type = "git"
 url = "https://github.com/GPT-RL/gym-minigrid.git"
 reference = "master"
-resolved_reference = "7e217263e8cc225a4640b9b100c56a83b352381f"
+resolved_reference = "b79d8b7ad39a69b4e9f7c823ebbb4bd8aadbda33"
 
 [[package]]
 name = "ipdb"
