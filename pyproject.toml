@@ -7,7 +7,7 @@ authors = ["Ethan Brooks <ethanabrooks@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 blosc = "^1.10.4"
-gym-minigrid = {git = "https://github.com/GPT-RL/gym-minigrid.git"}
+gym-minigrid = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 torch = [
