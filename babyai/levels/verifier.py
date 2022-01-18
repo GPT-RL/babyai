@@ -1,3 +1,4 @@
+import abc
 import os
 import numpy as np
 from enum import Enum
@@ -37,12 +38,27 @@ def pos_next_to(pos_a, pos_b):
     d = abs(xa - xb) + abs(ya - yb)
     return d == 1
 
+class Equatable(abc.ABC):
+    @abc.abstractmethod
+    def _members(self):
+        raise NotImplementedError()
 
-class ObjDesc:
+    def __members(self):
+        return self.__class__.__name__, *self._members()
+
+    def __eq__(self, other):
+        if type(other) is type(self):
+            return self.__members() == other.__members()
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.__members())
+
+class ObjDesc(Equatable):
     """
     Description of a set of objects in an environment
     """
-
     def __init__(self, type, color=None, loc=None):
         assert type in [None, *OBJ_TYPES], type
         assert color in [None, *COLOR_NAMES], color
@@ -57,6 +73,9 @@ class ObjDesc:
 
         # Set of initial object positions
         self.obj_poss = []
+
+    def _members(self):
+        return self.color, self.type, self.loc
 
     def __repr__(self):
         return "{} {} {}".format(self.color, self.type, self.loc)
@@ -238,12 +257,15 @@ class ActionInstr(Instr):
         raise NotImplementedError
 
 
-class OpenInstr(ActionInstr):
+class OpenInstr(Equatable, ActionInstr):
     def __init__(self, obj_desc, strict=False):
         super().__init__()
         assert obj_desc.type == "door"
         self.desc = obj_desc
         self.strict = strict
+
+    def _members(self):
+        return self.desc, self.strict
 
     def surface(self, env):
         return "open " + self.desc.surface(env)
@@ -274,7 +296,7 @@ class OpenInstr(ActionInstr):
         return "continue"
 
 
-class GoToInstr(ActionInstr):
+class GoToInstr(Equatable, ActionInstr):
     """
     Go next to (and look towards) an object matching a given description
     eg: go to the door
@@ -283,6 +305,9 @@ class GoToInstr(ActionInstr):
     def __init__(self, obj_desc):
         super().__init__()
         self.desc = obj_desc
+
+    def _members(self):
+        return self.desc,
 
     def surface(self, env):
         return "go to " + self.desc.surface(env)
@@ -303,7 +328,7 @@ class GoToInstr(ActionInstr):
         return "continue"
 
 
-class PickupInstr(ActionInstr):
+class PickupInstr(Equatable, ActionInstr):
     """
     Pick up an object matching a given description
     eg: pick up the grey ball
@@ -314,6 +339,9 @@ class PickupInstr(ActionInstr):
         assert obj_desc.type != "door"
         self.desc = obj_desc
         self.strict = strict
+
+    def _members(self):
+        return self.desc, self.strict
 
     def surface(self, env):
         return "pick up " + self.desc.surface(env)
@@ -350,7 +378,7 @@ class PickupInstr(ActionInstr):
         return "continue"
 
 
-class PutNextInstr(ActionInstr):
+class PutNextInstr(Equatable, ActionInstr):
     """
     Put an object next to another object
     eg: put the red ball next to the blue key
@@ -362,6 +390,9 @@ class PutNextInstr(ActionInstr):
         self.desc_move = obj_move
         self.desc_fixed = obj_fixed
         self.strict = strict
+
+    def _members(self):
+        return self.desc_move, self.desc_fixed, self.strict
 
     def surface(self, env):
         return (
